@@ -2,12 +2,15 @@
 
 L5XGen 客户端从本仓库的 raw 地址联网读取两类清单。**这里只放公开内容。**
 
-| 文件 | 用途 | 客户端读取地址 |
+| 文件 | 用途 | 客户端读取地址（优先 jsDelivr，失败退 raw） |
 | --- | --- | --- |
-| `crl.txt` | 吊销清单（作废的授权码指纹） | https://raw.githubusercontent.com/bansheng2000/l5xgen-release/main/crl.txt |
-| `update.json` | 检查更新 | https://raw.githubusercontent.com/bansheng2000/l5xgen-release/main/update.json |
+| `crl.txt` | 吊销清单（作废的授权码指纹） | https://cdn.jsdelivr.net/gh/bansheng2000/l5xgen-release@main/crl.txt |
+| `update.json` | 检查更新 | https://cdn.jsdelivr.net/gh/bansheng2000/l5xgen-release@main/update.json |
 
-> raw 地址有 CDN 缓存（约 5 分钟），客户端请求时自带时间戳参数绕开。
+> 2026-10-19 国内实测：`raw.githubusercontent.com` 3 次只成功 1 次（Connection was reset），
+> jsDelivr 3/3 成功且内容与本地逐字节一致 → **客户端优先 jsDelivr，失败再退 raw**。
+> jsDelivr 的 `@main` 缓存约 12 小时（raw 约 5 分钟），客户端请求自带时间戳参数。
+> 安装包本体走 GitHub Releases（见本仓库 Releases 页），不走 jsDelivr。
 
 ## 为什么必须是公开仓库
 
@@ -53,7 +56,7 @@ L5XGen.LicenseGen.exe crl --verify crl.txt
 ## update.json
 
 ```json
-{"version": "1.0.0", "url": "https://github.com/bansheng2000/l5xgen-release/releases/download/v1.0.0/L5XGen-Setup-1.0.0.exe", "sha256": "CC3C576AE6CA3F902D10CCAC46EA3A8AC4C804E1838398BFDDEB645E0ECA635F", "notes": "首个版本", "mandatory": "false"}
+{"version": "1.1.0", "url": "https://github.com/bansheng2000/l5xgen-release/releases/download/v1.1.0/L5XGen-Setup-1.1.0.exe", "sha256": "ABD24044E06EC3FDECDAEA79B08C631F31AB1A273BC4B0333A8F5967FFA74618", "notes": "新增授权溯源水印…", "mandatory": "false"}
 ```
 
 客户端按字段名正则解析（`UpdateService`），`url` 支持 https 与 file://。
@@ -63,5 +66,9 @@ L5XGen.LicenseGen.exe crl --verify crl.txt
 1. 把安装包作为 Release 资产上传（tag 如 `v1.1.0`）；
 2. 改 `update.json` 的 `version` / `url` / `sha256` / `notes`，推上来。
 
-注意：当前 `version` 与客户端内置版本同为 `1.0.0`，装了 1.0.0 的客户点「检查更新」只会得到
-「已是最新」，**不会去下载**；上面那个 Release 资产还没上传，等真发 1.1.0 时再建。
+当前状态：`version=1.1.0`，等于客户端内置版本（`EngineInfo.Version` / `UpdateService.CurrentVersion`）。
+装了 1.0.0 的客户点「检查更新」会提示 1.1.0 并可下载 —— Release 资产 `v1.1.0` 已上传，
+本机实测公网下载后 sha256 = `abd24044…74618`，与清单一致。
+
+**每次发版都要三处版本号对齐**：`src/L5XGen.Core/EngineInfo.cs` 的 `Version`、
+`src/L5XGen.Core/Update/UpdateService.cs` 的 `CurrentVersion`、`installer/l5xgen.iss` 的 `AppVer`。

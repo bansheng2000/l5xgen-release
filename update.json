@@ -1,1 +1,1 @@
-{"version": "1.0.0", "url": "https://github.com/bansheng2000/l5xgen-release/releases/download/v1.0.0/L5XGen-Setup-1.0.0.exe", "sha256": "CC3C576AE6CA3F902D10CCAC46EA3A8AC4C804E1838398BFDDEB645E0ECA635F", "notes": "首个版本", "mandatory": "false"}
+{"version": "1.1.0", "url": "https://github.com/bansheng2000/l5xgen-release/releases/download/v1.1.0/L5XGen-Setup-1.1.0.exe", "sha256": "ABD24044E06EC3FDECDAEA79B08C631F31AB1A273BC4B0333A8F5967FFA74618", "notes": "新增授权溯源水印（生成/新建时写入隐藏的「标准」表 A10/B10：版本+机器码+到期日）；版本号 1.1.0", "mandatory": "false"}
